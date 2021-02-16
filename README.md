@@ -62,7 +62,7 @@
 
 27. [ ] Write a programme which acted like a personal planner. A user can input an event, note things to-do on a certain date.
 28. [ ] Make a Markov chain generator. Read text from a source, create a histogram and allow different prefix lengths. See [Think Python](http://greenteapress.com/thinkpython2/html/thinkpython2014.html#sec159) for info.
-29. [] Noughts and crosses game.
+29. [ ] Noughts and crosses game.
 30. [ ] Create a Youtube video downloader (actually really difficult cos Youtube tries to block everything)
 31. [ ] Write a phone/address book programme, with persistent data. The users should be able to add/delete/change the data.
 32. [ ] Write a simple payroll programme, that would include pay rates, and hours work for employees.
