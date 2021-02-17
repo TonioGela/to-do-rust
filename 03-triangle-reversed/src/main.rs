@@ -20,10 +20,18 @@ fn parse(s: String) -> Result<usize, String> {
         .map_err(|_| format!("Argument {} must be a positive number!", s))
 }
 
+macro_rules! repeat {
+    ($a:expr, $b:block) => {
+        for _ in 0..$a {
+            $b
+        }
+    };
+}
+
 fn triangle_reversed(n: usize) {
     let mut string = "*".repeat(n);
-    for _ in 0..n {
+    repeat!(n, {
         println!("{}", string.bright_green());
         string.pop();
-    }
+    });
 }
