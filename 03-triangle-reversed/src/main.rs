@@ -21,7 +21,7 @@ fn parse(s: String) -> Result<usize, String> {
 }
 
 macro_rules! repeat {
-    ($a:expr, $b:block) => {
+    ($a:expr, $b:expr) => {
         for _ in 0..$a {
             $b
         }
@@ -34,4 +34,29 @@ fn triangle_reversed(n: usize) {
         println!("{}", string.bright_green());
         string.pop();
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn repeat_macro() {
+        let result = "*".repeat(10);
+        let mut test = String::new();
+        repeat!(10, test = test + "*");
+        assert_eq!(result, test)
+    }
+
+    #[test]
+    fn parse_should_extract_numbers() {
+        assert_eq!(
+            parse(String::from("hello")),
+            Err(String::from("Argument hello must be a positive number!"))
+        );
+        assert_eq!(
+            parse(String::from("-10")),
+            Err(String::from("Argument -10 must be a positive number!"))
+        );
+        assert_eq!(parse(String::from("100")), Ok(100));
+    }
 }
