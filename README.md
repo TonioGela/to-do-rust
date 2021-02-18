@@ -3,7 +3,7 @@
 ## Beginner
 
 1. [x] Write a programme which finds the factorial of a number entered by the user.
-2. [ ] Develop a programme to convert currency X to currency Y and vice versa.
+2. [x] Develop a programme to convert currency X to currency Y and vice versa.
 3. [x] Write a programme that prins out a triangle from largest to smallest; user inputs the largest number. Eg:
 
 ```

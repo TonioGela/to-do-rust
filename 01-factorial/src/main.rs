@@ -1,11 +1,15 @@
 use std::io::stdin;
+use std::process::exit;
 
 fn main() {
     println!("Gimme a number");
     let line = read_line();
     match line.parse::<u128>() {
         Ok(n) => println!("The factorial of {} is {}", n, factorial(n)),
-        Err(_) => println!("{} is not a number!", line),
+        Err(_) => {
+            eprintln!("{} is not a number!", line);
+            exit(1)
+        }
     }
 }
 
@@ -27,7 +31,7 @@ fn factorial(n: u128) -> u128 {
 mod tests {
     use super::factorial;
     #[test]
-    pub fn factorial_should_work() {
+    fn factorial_should_work() {
         test_factorial(1, 1);
         test_factorial(2, 2);
         test_factorial(3, 6);

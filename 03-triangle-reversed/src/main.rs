@@ -1,10 +1,14 @@
 use colored::*;
 use std::env::args;
+use std::process::exit;
 
 fn main() {
     match first_arg().and_then(parse) {
         Ok(n) => triangle_reversed(n),
-        Err(e) => println!("{}", e.red()),
+        Err(e) => {
+            eprintln!("{}", e.red());
+            exit(1);
+        }
     }
 }
 
