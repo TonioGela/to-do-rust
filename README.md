@@ -14,7 +14,7 @@
 *
 ```
 
-4. [ ] Write a programme that prints out a triangle from smallest to largest; user inputs bottom number. Eg:
+4. [x] Write a programme that prints out a triangle from smallest to largest; user inputs bottom number. Eg:
 
 ```
 *
