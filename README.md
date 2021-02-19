@@ -7,8 +7,8 @@
 3. [x] Write a programme that prints out a triangle from largest to smallest; user inputs the largest number.
 4. [x] Write a programme that prints out a triangle from smallest to largest; user inputs bottom number.
 5. [x] Print out a triangle from smallest to largest, skipping even rows. User inputs largest number.
-6. [ ] Develop a programme that uses a randomly generated number to select 1 of 3 (or more) functions to show the user. (?_?)
-7. [ ] Guessing game. ask the user to guess a number between 1 and a 100. If you guessed correctly, it will say you win. If you're too high or too low it will also let you know.
+6. [x] Develop a programme that uses a randomly generated number to select 1 of 3 (or more) functions to show the user. (?_?)
+7. [x] Guessing game. Ask the user to guess a number between 1 and a 100. If you guessed correctly, it will say you win. If you're too high or too low it will also let you know.
 8. [ ] Create a programme which generates Fibonacci series til a number 'n', where 'n' is entered by the user. Eg if the user enters 10 then the output would be: `1 1 2 3 5 8`
 9. [ ] Given a string, determine how many of the characters are vowels and how many are consonants. Terminate the string when the input character encountered is non-alphabetic.
 10. [ ] Find the Fifth root of the sum of the squares of the first 100 ODD numbers only.
