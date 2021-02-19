@@ -8,14 +8,13 @@ fn main() {
     let maybe_expression = Expression::from(args().skip(1).collect());
 
     let result = maybe_conf.and_then(|conf| {
-        maybe_expression.and_then(|expr| {
-            let from_rate = conf[&expr.currency_from].as_float();
-            let to_rate = conf[&expr.currency_to].as_float();
-            let rates = from_rate.zip(to_rate);
-            rates
-                .map(|(from, to)| &expr.value * from / to)
-                .ok_or("Unknown currencies")
-        })
+        let expr = maybe_expression?;
+        let from_rate = conf[&expr.currency_from].as_float();
+        let to_rate = conf[&expr.currency_to].as_float();
+        let rates = from_rate.zip(to_rate);
+        rates
+            .map(|(from, to)| &expr.value * from / to)
+            .ok_or("Unknown currencies")
     });
 
     match result {
