@@ -44,6 +44,7 @@
 34. [ ] Create a chess game.
 35. [ ] Create a binary tree which has search and sorting functions.
 36. [ ] Create a Quine, (a programme that prints out its own source code).
+37. [ ] [Implement a BitTorrent client](https://markuseliasson.se/article/bittorrent-in-python/)
 38. [ ] [Make a pokedex](http://codereview.stackexchange.com/questions/135293/basic-pokedex-in-c) - use a database, enums for types/gender etc
 39. [ ] Video format converter, eg .mov to .mp4 (ie frontend to ffmpeg)
 40. [ ] URL shortener service
