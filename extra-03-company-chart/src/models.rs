@@ -32,34 +32,16 @@ impl Company {
     }
 
     pub fn remove(&mut self, department: &str) -> Result<Message, Error> {
-        // ? Sadly this now worked due to borrowing :(
-        // self.get(department).and_then(|dep| {
-        //     if dep.is_empty() {
-        //         self.departments.retain(|d| d.name != department);
-        //         Ok(Message::RemovedDepartment {
-        //             name: department.to_owned(),
-        //         })
-        //     } else {
-        //         Err(Error::NonEmptyDepartment {
-        //             name: department.to_owned(),
-        //         })
-        //     }
-        // })
-
-        match self.get(department) {
-            Ok(dep) => {
-                if dep.is_empty() {
-                    self.departments.retain(|d| d.name != department);
-                    Ok(Message::RemovedDepartment {
-                        name: department.to_owned(),
-                    })
-                } else {
-                    Err(Error::NonEmptyDepartment {
-                        name: department.to_owned(),
-                    })
-                }
-            }
-            Err(e) => Err(e),
+        let dep = self.get(department)?;
+        if dep.is_empty() {
+            self.departments.retain(|d| d.name != department);
+            Ok(Message::RemovedDepartment {
+                name: department.to_owned(),
+            })
+        } else {
+            Err(Error::NonEmptyDepartment {
+                name: department.to_owned(),
+            })
         }
     }
 

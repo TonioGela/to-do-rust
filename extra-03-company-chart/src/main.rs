@@ -10,35 +10,35 @@ extern crate savefile_derive;
 
 // TODO: Add tests
 
-// TODO: Use colored :P
-
 fn main() {
     let args: Vec<String> = args().dropping(1).collect_vec();
     let args_ref: Vec<&str> = args.iter().map(|x| x.as_ref()).collect_vec();
 
-    let mut company = match load_file::<Company>("save.bin", 0) {
-        Err(_) => Company::new(),
-        Ok(company) => company,
-    };
+    let mut company: Company =
+        load_file::<Company>("save.bin", 0).unwrap_or_else(|_| Company::new());
 
-    let result = match &args_ref[..] {
-        ["add", "department", dep] => company.add((*dep).to_owned()),
-        ["remove", "department", dep] => company.remove(*dep),
-        ["add", person, "to", dep] => company.get(*dep).and_then(|dep| dep.add(*person)),
-        ["remove", person, "from", dep] => company.get(*dep).and_then(|dep| dep.remove(*person)),
-        ["show", "department", dep] => company.get(*dep).and_then(|dep| dep.print()),
-        ["show"] => company.print(),
-        _ => Err(models::Error::ParsingError),
-    };
+    let result: Result<models::Message, models::Error> = handle_commands(args_ref, &mut company);
 
     handle_result(result);
 
-    match save_file("save.bin", 0, &company) {
-        Ok(_) => (),
-        Err(e) => {
-            eprintln!("{}", e);
-            exit(1)
-        }
+    save_file("save.bin", 0, &company).unwrap_or_else(|e| {
+        eprintln!("{}", e);
+        exit(1)
+    });
+}
+
+fn handle_commands(
+    args_ref: Vec<&str>,
+    company: &mut Company,
+) -> Result<models::Message, models::Error> {
+    match &args_ref[..] {
+        ["add", "department", dep] => company.add((*dep).to_owned()),
+        ["remove", "department", dep] => company.remove(*dep),
+        ["add", person, "to", dep] => company.get(*dep)?.add(*person),
+        ["remove", person, "from", dep] => company.get(*dep)?.remove(*person),
+        ["show", "department", dep] => company.get(*dep)?.print(),
+        ["show"] => company.print(),
+        _ => Err(models::Error::ParsingError),
     }
 }
 
