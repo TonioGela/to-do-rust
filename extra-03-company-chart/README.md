@@ -1,0 +1,1 @@
+Build it with `cargo build --release && cargo strip && upx --best --lzma target/release/company-chart`

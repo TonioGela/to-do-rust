@@ -1,14 +1,16 @@
-use crate::models::Company;
+mod models;
+use colored::*;
 use itertools::Itertools;
+use models::Company;
 use savefile::prelude::*;
 use std::{env::args, process::exit};
 
 #[macro_use]
 extern crate savefile_derive;
 
-// ! FIXME: it's actually possible to remove a non empty department
-// TODO: refactor it using -> Result<(), Custom Error ADT> for (&mut self) methods
-// TODO: and simply handle Result in main (should be more testable)
+// TODO: Add tests
+
+// TODO: Use colored :P
 
 fn main() {
     let args: Vec<String> = args().dropping(1).collect_vec();
@@ -19,161 +21,78 @@ fn main() {
         Ok(company) => company,
     };
 
-    match &args_ref[..] {
-        ["add", "department", dep] => {
-            if company.has(*dep) {
-                log_and_fail(format!("Department {} already exists", dep))
-            } else {
-                company.add(String::from(*dep));
-                println!("Successfully added department {} to company", dep);
-            }
-        }
-        ["remove", "department", dep] => {
-            if company.has(dep) {
-                company.remove(dep);
-                println!("Successfully removed {} department", dep);
-            } else {
-                log_and_fail(format!("There is no {} department", dep))
-            }
-        }
-        ["add", person, "to", dep] => match company.get(*dep) {
-            Some(department) => {
-                department.add(*person);
-                println!("Successfully added {} to {}", person, dep);
-            }
-            None => log_and_fail(format!("There is no {} department", dep)),
-        },
-        ["remove", person, "from", dep] => match company.get(*dep) {
-            Some(department) => {
-                if department.has(person) {
-                    department.remove(person)
-                } else {
-                    log_and_fail(format!("There's no {} in {} department", person, dep))
-                }
-            }
-            None => log_and_fail(format!("There's no {} department", dep)),
-        },
-        ["show", "department", department] => {
-            match company.get(*department) {
-                Some(dep) => println!("{}", dep),
-                None => log_and_fail(format!("There is no department named {}", department)),
-            };
-            println!("foo")
-        }
-        ["show"] => println!("{}", company),
-        _ => println!(
-            "Unrecognised command, try one of these:
-  show, 
-  add department <department>, 
-  remove department <department>,
-  show department <department>, 
-  add <person> to <department>, 
-  remove <person> from <department>",
-        ),
-    }
+    let result = match &args_ref[..] {
+        ["add", "department", dep] => company.add((*dep).to_owned()),
+        ["remove", "department", dep] => company.remove(*dep),
+        ["add", person, "to", dep] => company.get(*dep).and_then(|dep| dep.add(*person)),
+        ["remove", person, "from", dep] => company.get(*dep).and_then(|dep| dep.remove(*person)),
+        ["show", "department", dep] => company.get(*dep).and_then(|dep| dep.print()),
+        ["show"] => company.print(),
+        _ => Err(models::Error::ParsingError),
+    };
+
+    handle_result(result);
 
     match save_file("save.bin", 0, &company) {
         Ok(_) => (),
-        Err(e) => log_and_fail(format!("{}", e)),
-    }
-}
-
-fn log_and_fail(message: String) -> ! {
-    eprintln!("{}", message);
-    exit(1);
-}
-
-mod models {
-    use std::fmt::Display;
-
-    #[derive(Debug, Savefile)]
-    pub struct Company {
-        departments: Vec<Department>,
-    }
-
-    impl Company {
-        pub fn new() -> Company {
-            Company {
-                departments: Vec::new(),
-            }
-        }
-
-        pub fn add(&mut self, dep_name: String) {
-            self.departments.push(Department::new(dep_name))
-        }
-
-        pub fn has(&self, department: &str) -> bool {
-            (&self.departments)
-                .into_iter()
-                .any(|dep| dep.name == department)
-        }
-
-        pub fn get(&mut self, dep_name: &str) -> Option<&mut Department> {
-            self.departments.iter_mut().find(|dep| dep.name == dep_name)
-        }
-
-        pub fn remove(&mut self, dep_name: &str) {
-            self.departments = self
-                .departments
-                .drain(..)
-                .filter(|d| d.name != dep_name)
-                .collect();
-        }
-    }
-
-    impl Display for Company {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            let mut departments: String = String::new();
-            self.departments.iter().for_each(|d| {
-                if !departments.is_empty() {
-                    departments.push_str("\n");
-                }
-                departments.push_str(d.to_string().as_str());
-            });
-            write!(f, "{}", departments)
-        }
-    }
-
-    #[derive(Debug, Savefile)]
-    pub struct Department {
-        name: String,
-        persons: Vec<String>,
-    }
-
-    impl Department {
-        pub fn new(name: String) -> Department {
-            Department {
-                name,
-                persons: Vec::new(),
-            }
-        }
-
-        pub fn has(&self, person: &str) -> bool {
-            (&self.persons).into_iter().any(|p| p == person)
-        }
-
-        pub fn add(&mut self, person: &str) {
-            self.persons.push(person.to_owned())
-        }
-
-        pub fn remove(&mut self, person: &str) {
-            self.persons = self.persons.drain(..).filter(|p| p != person).collect();
-        }
-    }
-
-    impl Display for Department {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            let mut persons: String = String::new();
-            self.persons.iter().for_each(|p| {
-                if !persons.is_empty() {
-                    persons.push_str(", ");
-                }
-                persons.push_str(p)
-            });
-            write!(f, "Department: {}\nStaff: {}", self.name, persons)
+        Err(e) => {
+            eprintln!("{}", e);
+            exit(1)
         }
     }
 }
+
+fn handle_result(result: Result<models::Message, models::Error>) {
+    match result {
+        Ok(m) => println!("{}", format_message(m).green()),
+        Err(e) => {
+            eprintln!("{}", format_error(e).red());
+            exit(1)
+        }
+    }
+}
+
+fn format_error(error: models::Error) -> String {
+    match error {
+        models::Error::DuplicatedUser { name, department } => {
+            format!("{} already present in department {}", name.bold(), department.bold())
+        }
+        models::Error::DuplicatedDepartment { name } => {
+            format!("Department {} already present", name.bold())
+        }
+        models::Error::UserNotFound { name, department } => {
+            format!("{} not found in department {}", name.bold(), department.bold())
+        }
+        models::Error::DepartmentNotFound { name } => format!("Department {} not found", name.bold()),
+        models::Error::NonEmptyDepartment { name } => format!("Department {} not empty", name.bold()),
+        models::Error::ParsingError => format!("{}{}",
+            "Unrecognised command, try one of these:\n  show,\n  add department <department>,\n  remove department <department>,",
+            "\n  show department <department>,\n  add <person> to <department>,\n  remove <person> from <department>"
+            )
+    }
+}
+
+fn format_message(message: models::Message) -> String {
+    match message {
+        models::Message::AddedDepartment { name } => format!("Added department {}", name.bold()),
+        models::Message::AddedUser { name, department } => {
+            format!("Added {} to department {}", name.bold(), department.bold())
+        }
+        models::Message::RemovedUser { name, department } => {
+            format!(
+                "Removed {} from department {}",
+                name.bold(),
+                department.bold()
+            )
+        }
+        models::Message::RemovedDepartment { name } => {
+            format!("Removed department {}", name.bold())
+        }
+        models::Message::Print { message } => format!("{}", message),
+    }
+}
+
+//
 
 // #![deny(clippy::all)] or #[deny(clippy::all)]
 
