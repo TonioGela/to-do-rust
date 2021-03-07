@@ -19,6 +19,7 @@
 15. [ ] Determine how much money is in a piggy bank that contains several £2 coins, £1 coins, 50p coins, 20p coins, 10p coins and 5p coins. Use the following values to test your programme: one £2, three £1, five 50p  coins, two 20p coins, one 10p coin and fifteen 5p coins.
 16. [ ] Create a simple palindrome checker programme. The programme should allow the user to enter a string and check whether the given string is a palindrome or not. Only digits and alphabets should be considered while checking for palindromes - any other characters are to be ignored.
 17. [ ] Write a programme that allows you to input students' midterm, final and homework scores, and calculate a weighted score. Use the following weights: 20% midterm, 40% final, 40% median homework.
+18. [ ] Create a Cacher implementation that memoizes a clojure.
 
 ## Intermediate
 
