@@ -1,0 +1,13 @@
+[package]
+name = "fibonacci"
+version = "0.1.0"
+authors = ["Antonio Gelameris <toniogela89@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+itertools = "0.10.0"
+
+[profile.release]
+lto = true
+codegen-units = 1
+incremental = false
